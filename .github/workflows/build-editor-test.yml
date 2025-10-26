@@ -119,14 +119,14 @@ jobs:
 
       - run: |
           set -x
-          labels_args=""
+          labels_args=()
           while IFS= read -r line; do
-            labels_args="$labels_args --label \"$line\""
+            labels_args+=(--label "$line")
           done <<< "${{ steps.meta.outputs.labels }}"
 
-          tags_args=""
+          tags_args=()
           while IFS= read -r line; do
-            tags_args="$tags_args --tag \"$line\""
+            tags_args+=(--tag "$line")
           done <<< "${{ steps.meta.outputs.tags }}"
 
           build_args=$(echo " \
@@ -137,4 +137,4 @@ jobs:
             --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }} \
           ")
 
-          docker buildx build -f editor/Dockerfile $labels_args $tags_args $build_args .
+          docker buildx build -f editor/Dockerfile "${labels_args[@]}" "${tags_args[@]}" $build_args .
