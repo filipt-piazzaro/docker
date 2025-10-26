@@ -121,7 +121,7 @@ jobs:
           echo '${{ steps.meta.outputs.json }}' | jq -r '.labels | to_entries | map("\(.key)=\(.value)") | .[]' > labels-json.txt
           echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' > labels-text.txt
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v5
         with:
           path: |
             labels-json.txt
