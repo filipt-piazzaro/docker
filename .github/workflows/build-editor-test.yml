@@ -121,13 +121,13 @@ jobs:
           echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' > labels
           echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' > tags
 
-          cat << EOS
+          cat << EOS > build-args
             --build-arg version=${{ matrix.version }}
             --build-arg changeSet=xxxxxxxx
             --build-arg module=${{ inputs.module }}
             --build-arg hubImage=ghcr.io/mob-sakai/unity3d_hub:${{ inputs.tag }}
             --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }}
-          EOS > build-args
+          EOS
 
       - uses: actions/upload-artifact@v5
         with:
