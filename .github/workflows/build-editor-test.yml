@@ -119,8 +119,8 @@ jobs:
 
       - run: |
           set -x
-          echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' | tr '\n' ' ' > labels
-          echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' | tr '\n' ' ' > tags
+          labels_args=$(echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' | tr '\n' ' ')
+          tags_args=$(echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' | tr '\n' ' ')
           build_args=$(echo " \
             --build-arg version=${{ matrix.version }} \
             --build-arg changeSet=xxxxxxxx \
@@ -129,4 +129,4 @@ jobs:
             --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }} \
           ")
 
-          docker buildx build -f editor/Dockerfile $(cat labels) $(cat tags) .
+          docker buildx build -f editor/Dockerfile $labels_args $tags_args $build_args .
