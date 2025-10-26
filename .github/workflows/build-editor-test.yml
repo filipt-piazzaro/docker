@@ -119,8 +119,16 @@ jobs:
 
       - run: |
           set -x
-          labels_args=$(echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' | tr '\n' ' ')
-          tags_args=$(echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' | tr '\n' ' ')
+          labels_args=""
+          while IFS= read -r line; do
+            labels_args="$labels_args --label \"$line\""
+          done <<< "${{ steps.meta.outputs.labels }}"
+
+          tags_args=""
+          while IFS= read -r line; do
+            tags_args="$tags_args --tag \"$line\""
+          done <<< "${{ steps.meta.outputs.tags }}"
+
           build_args=$(echo " \
             --build-arg version=${{ matrix.version }} \
             --build-arg changeSet=xxxxxxxx \
