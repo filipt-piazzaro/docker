@@ -129,4 +129,4 @@ jobs:
             --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }} \
           ")
 
-          docker buildx build -f editor/Dockerfile $labels $tags $build_args .
+          docker buildx build -f editor/Dockerfile "$labels $tags $build_args" .
