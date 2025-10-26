@@ -118,25 +118,17 @@ jobs:
             type=match,pattern=(${{ matrix.version }})-base,group=1,value=${{ matrix.version }}-${{ inputs.module }}
 
       - run: |
-          echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' > labels
-          echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' > tags
+          set -x
+          labels=$(echo "${{ steps.meta.outputs.labels }}" | sed 's/^/--label "/; s/$/"/' | tr '\n' ' ')
+          tags=$(echo "${{ steps.meta.outputs.tags }}" | sed 's/^/--tag "/; s/$/"/' | tr '\n' ' ')
+          build_args=$(echo " \
+            --build-arg version=${{ matrix.version }} \
+            --build-arg changeSet=xxxxxxxx \
+            --build-arg module=${{ inputs.module }} \
+            --build-arg hubImage=ghcr.io/mob-sakai/unity3d_hub:${{ inputs.tag }} \
+            --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }} \
+          ")
 
-          cat << EOS > build-args
-            --build-arg version=${{ matrix.version }}
-            --build-arg changeSet=xxxxxxxx
-            --build-arg module=${{ inputs.module }}
-            --build-arg hubImage=ghcr.io/mob-sakai/unity3d_hub:${{ inputs.tag }}
-            --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:${{ inputs.tag }}
-          EOS
-
-      - uses: actions/upload-artifact@v5
-        with:
-          path: |
-            labels
-            tags
-            build-args
-
-      - run: |
           docker buildx build -f editor/Dockerfile \
             $(cat labels) \
             $(cat tags) \
