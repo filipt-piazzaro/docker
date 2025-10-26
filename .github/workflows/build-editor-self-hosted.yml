@@ -1,0 +1,79 @@
+# Publish Unity3d editor images
+# ========================================================
+#
+# This workflow runs on self-hosted runners to avoid `No space left on device` errors during builds.
+#
+# [Required secrets]
+#   DOCKER_USERNAME:    Docker username to login
+#   DOCKER_PASSWORD:    Docker password/token
+#   GH_WORKFLOW_TOKEN:  Github parsonal access token to dispatch workflow
+name: 🛠️ Publish Editor (self-hosted)
+run-name: 🛠️ Publish Editor (self-hosted, ${{ inputs.versions }}, ${{ inputs.module }})
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: "Unity versions array to build"
+        required: true
+        default: '[ "2018.4.30f1" ]'
+      module:
+        description: "Unity module to build.\n(base|linux-il2cpp|windows-mono|mac-mono|ios|android|webgl)"
+        required: true
+        default: "base"
+
+jobs:
+  build:
+    name: Build and Publish ${{ matrix.version }}-${{ inputs.module }}
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      actions: read
+      packages: write
+    strategy:
+      max-parallel: 4
+      fail-fast: false
+      matrix:
+        version: ${{ fromJson(inputs.versions) }}
+    env:
+      NODE_TLS_REJECT_UNAUTHORIZED: 0
+    steps:
+      ###########################
+      #         Checkout        #
+      ###########################
+      - name: 🚚 Checkout
+        uses: actions/checkout@v5
+
+      ###########################
+      #       Setup Docker      #
+      ###########################
+      - name: 🔑 Login ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: mob-sakai
+          password: ${{ github.token }}
+      - name: 🔑 Login docker.io
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: mobsakai
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      ###########################
+      #         Publish         #
+      ###########################
+      - run: |
+          ./publish.sh ${{ matrix.version }} ${{ inputs.module }}
+
+  clean-up:
+    name: Clean up
+    runs-on: self-hosted
+    needs: build
+    if: always()
+    steps:
+      - name: 🧹 Clean up
+        run: |
+          docker buildx prune --all --force
+          docker image prune --all --force
+          docker system df
