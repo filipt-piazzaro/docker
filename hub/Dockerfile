@@ -1,4 +1,4 @@
-ARG baseImage=ghcr.io/mob-sakai/unity3d_base:latest
+ARG baseImage=ghcr.io/filipt-piazzaro/unity3d_base:latest
 FROM $baseImage
 ARG hubVersion=3.7.0
 

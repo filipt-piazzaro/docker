@@ -29,8 +29,8 @@ docker buildx build -f editor/Dockerfile \
   --build-arg version=$version \
   --build-arg changeSet=$changeSet \
   --build-arg module=$module \
-  --build-arg hubImage=ghcr.io/mob-sakai/unity3d_hub:$tagVersion \
-  --build-arg baseImage=ghcr.io/mob-sakai/unity3d_base:$tagVersion \
+  --build-arg hubImage=ghcr.io/filipt-piazzaro/unity3d_hub:$tagVersion \
+  --build-arg baseImage=ghcr.io/filipt-piazzaro/unity3d_base:$tagVersion \
   --label "org.opencontainers.image.created=`date -u +'%Y-%m-%dT%H:%M:%SZ'`" \
   --label "org.opencontainers.image.description=`jq -r '.description' package.json`" \
   --label "org.opencontainers.image.documentation=`jq -r '.homepage' package.json`" \
@@ -41,10 +41,10 @@ docker buildx build -f editor/Dockerfile \
   --label "org.opencontainers.image.url=`jq -r '.homepage' package.json`" \
   --label "org.opencontainers.image.vendor=`jq -r '.author.name' package.json`" \
   --label "org.opencontainers.image.version=$version-$module-$tagVersion" \
-  --tag "ghcr.io/mob-sakai/unity3d:$version-$module-$tagVersion" \
-  --tag "ghcr.io/mob-sakai/unity3d:$version-$module" \
-  --tag "mobsakai/unity3d:$version-$module-$tagVersion" \
-  --tag "mobsakai/unity3d:$version-$module" \
+  --tag "ghcr.io/filipt-piazzaro/unity3d:$version-$module-$tagVersion" \
+  --tag "ghcr.io/filipt-piazzaro/unity3d:$version-$module" \
+  --tag "filipt-piazzaro/unity3d:$version-$module-$tagVersion" \
+  --tag "filipt-piazzaro/unity3d:$version-$module" \
   --push \
   .
 
